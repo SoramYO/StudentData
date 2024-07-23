@@ -19,9 +19,6 @@ let initWebRoutes = (app) => {
             const pool = await sql.connect(config);
 
             let isExist = await checkUserCredential(SBD, CMND);
-            console.log(Choice1, Choice2, Choice3, Choice4);
-
-
 
             if (!isExist) {
                 const request = new sql.Request(pool);
@@ -67,13 +64,6 @@ let initWebRoutes = (app) => {
 
                 await request.query(query2);
 
-
-
-
-
-
-
-
                 res.send('Insert data successfully');
             } else {
                 res.status(400).send('User already exists');
@@ -81,8 +71,34 @@ let initWebRoutes = (app) => {
         } catch (err) {
             console.error(err);
             res.status(500).send(`An error occurred while inserting data: ${err.message}`);
-        } finally {
-            sql.close();
+        }
+    });
+
+    router.post("/insertTotal", async (req, res) => {
+        try {
+            let data = req.body;
+
+            const { TotalStudent } = data;
+            console.log(data)
+            const totaParse = parseInt(TotalStudent);
+
+            console.log(totaParse)
+            const pool = await sql.connect(config);
+
+            const request = new sql.Request(pool);
+            const query = `
+                INSERT INTO StudentCount(StudentCount)
+                VALUES (@Total)
+            `;
+
+            request.input('Total', sql.Int, totaParse);
+
+            await request.query(query);
+
+            res.send('Insert total successfully');
+        } catch (err) {
+            console.error(err);
+            res.status(500).send(`An error occurred while inserting total: ${err.message}`);
         }
     });
 
